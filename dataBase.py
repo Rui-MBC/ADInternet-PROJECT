@@ -32,3 +32,13 @@ class Gate(Base):
             'secret':self.secret,
             'location':self.location,
         }
+
+Base.metadata.create_all(engine) #Create tables for the data models
+
+Session = sessionmaker(bind=engine)
+session = Session()
+
+def newGate(ID,secret,location):
+    gate = Gate(id=ID,secret=secret,location=location)
+    session.add(gate)
+    session.commit()
