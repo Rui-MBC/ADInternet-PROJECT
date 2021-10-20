@@ -1,3 +1,4 @@
+from flask.json import jsonify
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Date
@@ -46,4 +47,5 @@ def newGate(ID,secret,location):
     session.commit()
 
 def listGate():
-    return session.query(Gate).all()
+    list=session.query(Gate).all()
+    return [Gate.as_json(item) for item in list]
