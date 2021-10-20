@@ -10,7 +10,7 @@ from dataBase import Gate
 import random
 app = Flask(__name__)
 
-@app.route("/gate", methods=['GET','PUT'])
+@app.route("/gates", methods=['GET','PUT'])
 def createGate( ):
     if request.method=='PUT':
         gateInfo = request.json
