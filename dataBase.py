@@ -1,3 +1,4 @@
+from logging import PlaceHolder
 from flask.json import jsonify
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -6,6 +7,11 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import sessionmaker
 from os import path
+import datetime
+from datetime import timedelta
+
+
+from sqlalchemy.sql.sqltypes import DateTime
 
 #SLQ access layer initialization
 DATABASE_FILE = "database.sqlite"
@@ -36,6 +42,21 @@ class Gate(Base):
             'count':self.count,
         }
 
+class User(Base):
+    __tablename__ = 'user'
+    id = Column(Integer, primary_key=True)
+    code = Column(Integer)
+    time_stamp = Column(DateTime)
+    def __repr__(self):
+        return "<User(id=%d code='%s', time_stamp='%s')>" % (
+                                self.id, self.code, str(self.time_stamp))
+    def as_json(self):
+        return {
+            'id':self.id,
+            'code':self.code,
+            'time_stamp':self.time_stamp,
+        }
+    
 Base.metadata.create_all(engine) #Create tables for the data models
 
 Session = sessionmaker(bind=engine)
@@ -49,3 +70,19 @@ def newGate(ID,secret,location):
 def listGate():
     list=session.query(Gate).all()
     return [Gate.as_json(item) for item in list]
+
+def newUser(Id,Code):
+    placeholderTime = datetime.datetime.now() - timedelta(hours = 1)
+    user=User(id=Id,code=Code,time_stamp=placeholderTime)
+    session.add(user)
+    session.commit()
+
+def getUserById(ID):
+    resp = session.query(User).filter(User.id == ID).first()
+    return resp
+
+def setNewUserCode(ID, newCode, newDate ):
+    user=getUserById(ID)
+    user.code=newCode
+    user.time_stamp=newDate
+    session.commit()
