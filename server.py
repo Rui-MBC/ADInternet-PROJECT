@@ -1,12 +1,30 @@
 from flask import Flask, render_template, request, send_from_directory, jsonify, json
 from werkzeug.utils import secure_filename
 import requests
+import datetime
+from datetime import timedelta
+import random
 app = Flask(__name__)
 
+###########################
+# USER DATABASE ENDPOINTS #
+###########################
+
+# o metodo post servir para meter o codigo aquando do pedido
+#o metodo get servir para autentificar o codigo
 @app.route("/users/<path:id>/code", methods = ['GET'])
 def getCode(id):
-    resp = requests.get("http://localhost:8000/users/"+id+"/code")
-    return jsonify(resp.json())
+    newCode = random.randint(1000,9999)
+    code_info = {
+        'code':str(newCode)
+    }
+    resp = requests.get("http://localhost:8000/users/"+id+"/code",json=code_info)
+    if resp.status_code == 200 :
+        return jsonify(newCode)
+
+###########################
+# GATE DATABASE ENDPOINTS #
+###########################
 
 
 @app.route("/gates/id", methods = ['GET'])
@@ -23,7 +41,14 @@ def logInGate():
 
 
 @app.route("/gates/code", methods = ['GET'])
+def codeValidation():
+    if request.method == ['GET']:
+        content = request.json
+        resp = requests.get("http://localhost:8000/users/"+id+"/code", json=content)
 
+##########################
+# ADMIN WEBAPP ENDPOINTS #
+##########################
 
 @app.route("/")
 def index():

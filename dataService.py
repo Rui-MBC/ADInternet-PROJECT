@@ -13,16 +13,30 @@ from dataBase import session
 import random
 app = Flask(__name__)
 
+###########################
+# USER DATABASE ENDPOINTS #
+###########################
+
 @app.route("/users/<path:id>/code", methods = ['GET'])
 def getCode(id):
-    user = dB.getUserById(id)
-    validade = datetime.datetime.now() - timedelta(minutes = 5)
-    if user.time_stamp > validade:
-        return jsonify(user.code)
-    else:
-        newCode = random.randint(1000,9999)
-        dB.setNewUserCode(id, newCode, datetime.datetime.now() )
-        return jsonify(newCode)
+    content = request.json
+    newCode = content['code']
+    dB.setNewUserCode(id, newCode, datetime.datetime.now())
+    # user = dB.getUserById(id)
+    # validade = datetime.datetime.now() - timedelta(minutes = 5)
+    # if user.time_stamp > validade:
+    #     return jsonify(user.code)
+    # else:
+    #     newCode = random.randint(1000,9999)
+    #     dB.setNewUserCode(id, newCode, datetime.datetime.now() )
+    #     return jsonify(newCode)
+
+@app.route("/users/<path:id>/code", methods = ['GET'])
+
+
+###########################
+# GATE DATABASE ENDPOINTS #
+###########################
 
 
 @app.route("/gates/id", methods = ['GET'])

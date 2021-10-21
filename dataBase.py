@@ -62,6 +62,10 @@ Base.metadata.create_all(engine) #Create tables for the data models
 Session = sessionmaker(bind=engine)
 session = Session()
 
+###########################
+# GATE DATABASE FUNCTIONS #
+###########################
+
 def newGate(ID,secret,location):
     gate = Gate(id = ID,secret = secret,location = location,count = 0)
     session.add(gate)
@@ -76,14 +80,18 @@ def getGateById(ID):
     return resp
 
 
+###########################
+# USER DATABASE FUNCTIONS #
+###########################
 
+# def newUser(Id,Code):
+#     placeholderTime = datetime.datetime.now() - timedelta(hours = 1)
+#     user = User(id = Id,code = Code,time_stamp = placeholderTime)
+#     session.add(user)
+#     session.commit()
 
-
-
-
-def newUser(Id,Code):
-    placeholderTime = datetime.datetime.now() - timedelta(hours = 1)
-    user = User(id = Id,code = Code,time_stamp = placeholderTime)
+def newUser(ID,code,time):
+    user = User(id = ID,code = code,time_stamp = time)
     session.add(user)
     session.commit()
 
@@ -92,7 +100,11 @@ def getUserById(ID):
     return resp
 
 def setNewUserCode(ID, newCode, newDate ):
-    user=getUserById(ID)
-    user.code = newCode
-    user.time_stamp = newDate
-    session.commit()
+    user=getUserById(ID)  
+    if bool(user):  
+        user.code = newCode
+        user.time_stamp = newDate
+        session.commit()
+    else:
+        newUser(ID,newCode,newDate)
+        
