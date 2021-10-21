@@ -3,12 +3,28 @@ from werkzeug.utils import secure_filename
 import requests
 app = Flask(__name__)
 
-@app.route("/user/<path:id>/code", methods=['GET'])
+@app.route("/users/<path:id>/code", methods = ['GET'])
 def getCode(id):
     resp = requests.get("http://localhost:8000/users/"+id+"/code")
     return jsonify(resp.json())
 
-    
+
+@app.route("/gates/id", methods = ['GET'])
+def logInGate():
+    if request.method == ['GET']:
+        content = request.json
+        # create_cont = {
+        #     'id':content['id'],
+        #     'secret':content["secret"]
+        # }
+        resp = requests.get("http://localhost:8000/gates/id", json=content)
+        return jsonify(resp.json())
+
+
+
+@app.route("/gates/code", methods = ['GET'])
+
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -17,9 +33,9 @@ def index():
 def newGate():
     return render_template("newGate.html")
 
-@app.route("/createGate",methods=['GET','POST'])
+@app.route("/createGate",methods = ['GET','POST'])
 def createGate():
-    if request.method=='POST':
+    if request.method == 'POST':
         form_content = request.form.to_dict()
         create_gate_cont = {
             'id':form_content['id'],
@@ -34,4 +50,4 @@ def listGate():
     return jsonify(resp.json())
 
 if __name__ == "__main__":
-    app.run(host='localhost', port=8008, debug=True)
+    app.run(host = 'localhost', port = 8008, debug = True)

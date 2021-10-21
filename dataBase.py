@@ -19,7 +19,7 @@ db_exists = False
 if path.exists(DATABASE_FILE):
     db_exists = True
 
-engine = create_engine('sqlite:///%s'%(DATABASE_FILE), echo=False) #echo = True shows all SQL calls
+engine = create_engine('sqlite:///%s?check_same_thread=False'%(DATABASE_FILE), echo = False) 
 
 Base = declarative_base()
 
@@ -63,17 +63,27 @@ Session = sessionmaker(bind=engine)
 session = Session()
 
 def newGate(ID,secret,location):
-    gate = Gate(id=ID,secret=secret,location=location,count=0)
+    gate = Gate(id = ID,secret = secret,location = location,count = 0)
     session.add(gate)
     session.commit()
 
 def listGate():
-    list=session.query(Gate).all()
+    list = session.query(Gate).all()
     return [Gate.as_json(item) for item in list]
+
+def getGateById(ID):
+    resp = session.query(Gate).filter(Gate.id == ID).first()
+    return resp
+
+
+
+
+
+
 
 def newUser(Id,Code):
     placeholderTime = datetime.datetime.now() - timedelta(hours = 1)
-    user=User(id=Id,code=Code,time_stamp=placeholderTime)
+    user = User(id = Id,code = Code,time_stamp = placeholderTime)
     session.add(user)
     session.commit()
 
@@ -83,6 +93,6 @@ def getUserById(ID):
 
 def setNewUserCode(ID, newCode, newDate ):
     user=getUserById(ID)
-    user.code=newCode
-    user.time_stamp=newDate
+    user.code = newCode
+    user.time_stamp = newDate
     session.commit()
