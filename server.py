@@ -3,6 +3,12 @@ from werkzeug.utils import secure_filename
 import requests
 app = Flask(__name__)
 
+@app.route("/user/<path:id>/code", methods=['GET'])
+def getCode(id):
+    resp = requests.get("http://localhost:8000/users/"+id+"/code")
+    return jsonify(resp.json())
+
+    
 @app.route("/")
 def index():
     return render_template("index.html")
