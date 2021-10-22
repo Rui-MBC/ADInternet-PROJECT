@@ -14,13 +14,14 @@ app = Flask(__name__)
 #o metodo get servir para autentificar o codigo
 @app.route("/users/<path:id>/code", methods = ['GET'])
 def getCode(id):
-    newCode = random.randint(1000,9999)
-    code_info = {
-        'code':str(newCode)
-    }
-    resp = requests.get("http://localhost:8000/users/"+id+"/code",json=code_info)
-    if resp.status_code == 200 :
-        return jsonify(newCode)
+    if request.method == ['POST']:
+        newCode = random.randint(1000,9999)
+        code_info = {
+            'code':str(newCode)
+        }
+        resp = requests.post("http://localhost:8000/users/"+id+"/code",json=code_info)
+        if resp.status_code == 200 :
+            return jsonify(newCode)
 
 ###########################
 # GATE DATABASE ENDPOINTS #
@@ -44,7 +45,23 @@ def logInGate():
 def codeValidation():
     if request.method == ['GET']:
         content = request.json
+        id = content['id']
         resp = requests.get("http://localhost:8000/users/"+id+"/code", json=content)
+
+        validation = resp.json()
+        validation = int(validation['Validation'])
+        if validation == 1:
+            resp={
+                'SUCCESS':'1'
+            }
+        else:
+            resp={
+                'SUCCESS':'0'
+            }
+        
+        return jsonify(resp)
+            
+
 
 ##########################
 # ADMIN WEBAPP ENDPOINTS #

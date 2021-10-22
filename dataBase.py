@@ -107,4 +107,11 @@ def setNewUserCode(ID, newCode, newDate ):
         session.commit()
     else:
         newUser(ID,newCode,newDate)
+
+def validateCode(ID,code):
+    resp = getUserById(ID)
+    if resp.code == code and datetime.datetime.now() - resp.time_stamp < timedelta(minutes = 1):
+        return 1
+    else:
+        return 0
         
