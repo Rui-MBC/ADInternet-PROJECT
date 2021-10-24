@@ -17,12 +17,13 @@ app = Flask(__name__)
 # USER DATABASE ENDPOINTS #
 ###########################
 
-@app.route("/users/<path:id>/code", methods = ['GET','POST'])
+@app.route("/users/<path:id>/code", methods = ['GET','PUT'])
 def getCode(id):
-    if request.method == ['POST']:
+    if request.method == 'PUT':
         content = request.json
-        newCode = content['code']
+        newCode = int(content['code'])
         dB.setNewUserCode(id, newCode, datetime.datetime.now())
+        return jsonify(1)
         # user = dB.getUserById(id)
         # validade = datetime.datetime.now() - timedelta(minutes = 5)
         # if user.time_stamp > validade:
@@ -31,7 +32,7 @@ def getCode(id):
         #     newCode = random.randint(1000,9999)
         #     dB.setNewUserCode(id, newCode, datetime.datetime.now() )
         #     return jsonify(newCode)
-    elif request.method == ['GET']:
+    elif request.method == 'GET':
         content = request.json
         id = content['id']
         code = content['code']
@@ -43,9 +44,11 @@ def getCode(id):
             return jsonify(success)
         else :
             success={
-                'Validation':'1'
+                'Validation':'0'
             }
             return jsonify(success)
+    else:
+        return jsonify(0)
 
 
 
@@ -57,7 +60,7 @@ def getCode(id):
 
 @app.route("/gates/id", methods = ['GET'])
 def logInGate():
-    if request.method == ['GET']:
+    if request.method == 'GET':
         gateInfo = request.json
         gate = dB.getGateById(gateInfo["id"])
         if gate.secret == gateInfo["secret"]:
@@ -83,5 +86,5 @@ def createGate( ):
     
 if __name__ == "__main__":
     session.query(dB.User).delete()
-    dB.newUser(85229,27)
+    dB.newUser(85229,27,datetime.datetime.now() - timedelta(hours = 1))
     app.run(host = 'localhost', port = 8000, debug = True)    

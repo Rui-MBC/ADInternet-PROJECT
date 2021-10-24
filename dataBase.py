@@ -110,7 +110,7 @@ def setNewUserCode(ID, newCode, newDate ):
 
 def validateCode(ID,code):
     resp = getUserById(ID)
-    if resp.code == code and datetime.datetime.now() - resp.time_stamp < timedelta(minutes = 1):
+    if resp.code == code and resp.time_stamp + timedelta(minutes = 2)  > datetime.datetime.now():
         return 1
     else:
         return 0

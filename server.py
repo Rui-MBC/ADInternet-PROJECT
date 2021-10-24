@@ -14,12 +14,12 @@ app = Flask(__name__)
 #o metodo get servir para autentificar o codigo
 @app.route("/users/<path:id>/code", methods = ['GET'])
 def getCode(id):
-    if request.method == ['POST']:
+    if request.method == 'GET':
         newCode = random.randint(1000,9999)
         code_info = {
             'code':str(newCode)
         }
-        resp = requests.post("http://localhost:8000/users/"+id+"/code",json=code_info)
+        resp = requests.put("http://localhost:8000/users/"+id+"/code",json=code_info)
         if resp.status_code == 200 :
             return jsonify(newCode)
 
@@ -30,7 +30,7 @@ def getCode(id):
 
 @app.route("/gates/id", methods = ['GET'])
 def logInGate():
-    if request.method == ['GET']:
+    if request.method == 'GET':
         content = request.json
         # create_cont = {
         #     'id':content['id'],
@@ -43,7 +43,7 @@ def logInGate():
 
 @app.route("/gates/code", methods = ['GET'])
 def codeValidation():
-    if request.method == ['GET']:
+    if request.method == 'GET':
         content = request.json
         id = content['id']
         resp = requests.get("http://localhost:8000/users/"+id+"/code", json=content)

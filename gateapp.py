@@ -2,7 +2,7 @@ import sys
 import requests
 
 print("Contacting server ...")
-if sys.argv != 3:
+if len(sys.argv) < 1:
     print("Inavlid number of arguments")
 else:
     id = sys.argv[1]
