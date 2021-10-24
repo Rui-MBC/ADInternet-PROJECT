@@ -39,12 +39,20 @@ def getCode(id):
         validation = dB.validateCode(id,code)
         if validation == 1:
             success={
-                'Validation':'1'
+                'errorCode':'1',
+                'errorDescription':'The Wrong Code Was Entered.'
             }
             return jsonify(success)
         elif validation == 2:
             success={
-                'Validation':'2'
+                'errorCode':'2',
+                'errorDescription':'This Code Has Been Used Already.'
+            }
+            return jsonify(success)
+        elif validation == 0:
+            success={
+                'errorCode':'0',
+                'errorDescription':'Correct Code, Please Proceed.'
             }
             return jsonify(success)
     else:
