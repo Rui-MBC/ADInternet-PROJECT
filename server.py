@@ -19,9 +19,23 @@ def getCode(id):
         code_info = {
             'code':str(newCode)
         }
-        resp = requests.put("http://localhost:8000/users/"+id+"/code",json=code_info)
-        if resp.status_code == 200 :
-            return jsonify(newCode)
+        try:
+            resp = requests.put("http://localhost:8000/users/"+id+"/code",json=code_info)
+        except:
+            resp = {
+                'errorCode' : 7,
+                'errorDescription' : 'Couldn´t access database'
+            }
+            return jsonify(resp)
+        
+        response = resp.json()
+        if response['errorCode'] == 0 :
+            response ={
+                'errorCode' : 0,
+                'errorDescription' : '',
+                'code': newCode
+            }
+        return jsonify(response)
 
 ###########################
 # GATE DATABASE ENDPOINTS #
@@ -31,13 +45,29 @@ def getCode(id):
 @app.route("/gates/id", methods = ['GET'])
 def logInGate():
     if request.method == 'GET':
-        content = request.json
+        try:
+            content = request.json
+        except:
+            resp = {
+                'errorCode' : 5,
+                'errorDescription':'Server had an error with JSON input.'
+            }
+            return jsonify(resp)
+
         if bool(content['id']) and bool(content['secret']):
-            resp = requests.get("http://localhost:8000/gates/id", json=content)
+            try:
+                resp = requests.get("http://localhost:8000/gates/id", json=content)
+            except:
+                resp = {
+                    'errorCode' : 7,
+                    'errorDescription' : 'Couldn´t access database'
+                }
+                return jsonify(resp)
+
             return jsonify(resp.json())
         else:
             resp = {
-                'errorCode' : 1,
+                'errorCode' : 10,
                 'errorDescription' : 'No ID or secret'
             }
             return jsonify(resp)
@@ -47,25 +77,35 @@ def logInGate():
 @app.route("/gates/code", methods = ['GET'])
 def codeValidation():
     if request.method == 'GET':
-        content = request.json
+        try:
+            content = request.json
+        except:
+            resp = {
+                'errorCode' : 5,
+                'errorDescription' : 'Server had an error with JSON input.'
+            }
+            return jsonify(resp)
+        code = content['code']
         id = content['id']
-        resp = requests.get("http://localhost:8000/users/"+id+"/code", json=content)
+        if not code or not id:
+            resp = {
+                'errorCode' : 8,
+                'errorDescription' : 'Lacking arguments'
+            }
+            return jsonify(resp)
+
+        try:
+            resp = requests.get("http://localhost:8000/users/"+id+"/code", json=content)
+        except:
+            resp = {
+                'errorCode' : 7,
+                'errorDescription' : 'Couldn´t access database'
+            }
+            return jsonify(resp)
 
         validation = resp.json()
-        errorCode = validation['errorCode']
-        if errorCode >= 0:
-            if errorCode == 1:
-                resp={
-                    'errorCode':errorCode,
-                    'errorDescription':validation['errorDescription']
-
-                }
-            else:
-                resp={
-                    'errorCode':0
-                }
         
-        return jsonify(resp)
+        return jsonify(validation)
             
 
 
@@ -85,16 +125,47 @@ def newGate():
 def createGate():
     if request.method == 'POST':
         form_content = request.form.to_dict()
+        try:
+            id= int(form_content['id'])
+        except:
+            resp = {
+                'errorCode' : 9,
+                'errorDescription' : '!!! Bad form !!!'
+            }
+            return jsonify(resp)
+
+        if not form_content or not form_content['id'] or not form_content["location"]:
+            
+            resp = {
+                'errorCode' : 9,
+                'errorDescription' : '!!! Bad form !!!'
+            }
+            return jsonify(resp)
+
         create_gate_cont = {
             'id':form_content['id'],
             'location':form_content["location"]
         }
-        resp = requests.put("http://localhost:8000/gates",json = create_gate_cont)
+        try:
+            resp = requests.put("http://localhost:8000/gates",json = create_gate_cont)
+        except:
+            resp = {
+                'errorCode' : 7,
+                'errorDescription' : 'Couldn´t access database'
+            }
+            return jsonify(resp)
         return jsonify(resp.json())
 
 @app.route("/listGate")
 def listGate():
-    resp = requests.get("http://localhost:8000/gates")
+    try:
+        resp = requests.get("http://localhost:8000/gates")
+    except:
+        resp = {
+            'errorCode' : 7,
+            'errorDescription' : 'Couldn´t access database'
+        }
+        return jsonify(resp)
     return jsonify(resp.json())
 
 if __name__ == "__main__":

@@ -6,7 +6,7 @@ if len(sys.argv) < 1:
     print("Inavlid number of arguments")
 else:
     try:
-        id = sys.argv[1]
+        gate_id = sys.argv[1]
     except:
         print("Error getting ID !!!")
         exit()
@@ -18,10 +18,14 @@ else:
         exit()
 
     body = {
-        'id':id,
+        'id':gate_id,
         'secret':str(secret)
     }
-    resp = requests.get("http://localhost:8008/gates/id",json=body)
+    try:
+        resp = requests.get("http://localhost:8008/gates/id",json=body)
+    except:
+        print('Couldn´t access server')
+        exit()
 
     resp = resp.json()
     resp_code = resp['errorCode']
@@ -31,21 +35,26 @@ else:
         print("The secret is valid for this gate")
         while success != 1 :
             code = input("type the user code:")
-            id = input("type the iser id:")
+            id = 1111 #input("type the user id:(1111)")
             print("Connecting Server ...")
             body = {
                 'id':str(id),
-                'code':str(code)
+                'code':str(code),
+                'gate_id':gate_id
             }
-            resp = requests.get("http://localhost:8008/gates/code",json=body)
+            try:
+                resp = requests.get("http://localhost:8008/gates/code",json=body)
+            except:
+                print('Couldn´t access server')
+                exit()
             resp = resp.json()
-            resp = resp['SUCCESS']
-            if int(resp) == 1 :
+            errorCode = resp['errorCode']
+            if errorCode == 0:
                 success = 1
                 print("!!! Code Valid !!!")
                 print("!!! The gate will cose in 5 s !!!")
             else:
-                print("!!! Code Not Valid !!!")
+                print(resp['errorDescription'])
 
     else:
         print(resp['errorDescription'])

@@ -20,38 +20,58 @@ app = Flask(__name__)
 @app.route("/users/<path:id>/code", methods = ['GET','PUT'])
 def getCode(id):
     if request.method == 'PUT':
-        content = request.json
+        try:
+            content = request.json
+        except:
+            resp = {
+                'errorCode' : 5,
+                'errorDescription':'database had an error with JSON input.'
+            }
+            return jsonify(resp)
         newCode = content['code']
+        if not newCode:
+            resp = {
+                'errorCode' : 6,
+                'errorDescription':'Failed to receive code'
+            }
+            return jsonify(resp)
         dB.setNewUserCode(id, newCode, datetime.datetime.now())
-        return jsonify(1)
-        # user = dB.getUserById(id)
-        # validade = datetime.datetime.now() - timedelta(minutes = 5)
-        # if user.time_stamp > validade:
-        #     return jsonify(user.code)
-        # else:
-        #     newCode = random.randint(1000,9999)
-        #     dB.setNewUserCode(id, newCode, datetime.datetime.now() )
-        #     return jsonify(newCode)
+        resp = {
+                'errorCode' : 0,
+                'errorDescription':''
+            }
+        return jsonify(resp)
+
+        
     elif request.method == 'GET':
-        content = request.json
+
+        try:
+            content = request.json
+        except:
+            resp = {
+                'errorCode' : 5,
+                'errorDescription':'database had an error with JSON input.'
+            }
+            return jsonify(resp)
         id = content['id']
         code = content['code']
-        validation = dB.validateCode(id,code)
+        gate_id = content['gate_id']
+        validation = dB.validateCode(id,code,gate_id)
         if validation == 1:
             success={
-                'errorCode':'1',
-                'errorDescription':'The Wrong Code Was Entered.'
+                'errorCode':1,
+                'errorDescription':'!!! Code not valid !!!'
             }
             return jsonify(success)
         elif validation == 2:
             success={
-                'errorCode':'2',
+                'errorCode':2,
                 'errorDescription':'This Code Has Been Used Already.'
             }
             return jsonify(success)
         elif validation == 0:
             success={
-                'errorCode':'0',
+                'errorCode':0,
                 'errorDescription':'Correct Code, Please Proceed.'
             }
             return jsonify(success)
@@ -69,31 +89,70 @@ def getCode(id):
 @app.route("/gates/id", methods = ['GET'])
 def logInGate():
     if request.method == 'GET':
-        gateInfo = request.json
+        try:
+            gateInfo = request.json 
+        except:
+            response = {
+                    'errorCode':3,
+                    'errorDescription':'DataBase had an error with JSON input.'
+                }
+            return jsonify(response)
+
+        # if not isinstance(gateInfo["id"],int) :
+        #     response = {
+        #             'errorCode':4,
+        #             'errorDescription':'Invalid ID.'
+        #         }
+        #     return jsonify(response)
+
         gate = dB.getGateById(gateInfo["id"])
-        if gate.secret == gateInfo["secret"]:
-            create_cont = {
-                'errorCode':0
-            }
+        if gate != None :
+            if gate.secret == gateInfo["secret"]:
+                response = {
+                    'errorCode':0,
+                    'errorDescription':''
+                }
+            else:
+                response = {
+                    'errorCode':1,
+                    'errorDescription':'The secret is not valid for this gate.'
+                }
+            
         else:
-            create_cont = {
-                'errorCode':1,
-                'errorDescription':'The secret is not valid for this gate'
-            }
-        return jsonify(create_cont)
+            response = {
+                    'errorCode':2,
+                    'errorDescription':'No gate found for this ID.'
+                }
+
+        return jsonify(response)
 
 @app.route("/gates", methods = ['GET','PUT'])
 def createGate( ):
     if request.method == 'PUT':
-        gateInfo = request.json
-        sec = random.randint(1000,9999)
-        dB.newGate(int(gateInfo["id"]), str(sec) ,gateInfo["location"])
-        return jsonify(str(sec))
+        try:
+            gateInfo = request.json 
+        except:
+            response = {
+                    'errorCode':3,
+                    'errorDescription':'DataBase had an error with JSON input.'
+                }
+            return jsonify(response)
+        sec = random.randint(1000,9999)  
+        
+        if not dB.getGateById(int(gateInfo["id"])):
+            dB.newGate(int(gateInfo["id"]), str(sec) ,gateInfo["location"])
+            return jsonify(str(sec))
+        else:
+            response = {
+                    'errorCode':4,
+                    'errorDescription':'Gate id not available.'
+                }
+            return jsonify(response)
         #return str(sec)
     if request.method == 'GET':
         return jsonify(dB.listGate())
     
 if __name__ == "__main__":
     session.query(dB.User).delete()
-    dB.newUser(85229,str(27),datetime.datetime.now() - timedelta(hours = 1))
+    dB.newUser(1111,str(27),datetime.datetime.now() - timedelta(hours = 1))
     app.run(host = 'localhost', port = 8000, debug = True)    

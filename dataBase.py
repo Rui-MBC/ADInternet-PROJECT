@@ -108,16 +108,18 @@ def setNewUserCode(ID, newCode, newDate ):
     else:
         newUser(ID,newCode,newDate)
 
-def validateCode(ID,code):
+def validateCode(ID,code,gate_id):
     resp = getUserById(ID)
     true1 = str(resp.code) == code
     true2 = resp.time_stamp + timedelta(minutes = 2)  > datetime.datetime.now()
     if str(resp.code) == code and resp.time_stamp + timedelta(minutes = 2)  > datetime.datetime.now():
-        resp.time_stamp =  datetime.datetime.now() - timedelta(years = 100)
+        resp.time_stamp =  datetime.datetime.now() - timedelta(weeks = 100)
+        gate = getGateById(gate_id)
+        gate.count = gate.count + 1
         session.commit()
-        return 1
-    elif str(resp.code) == code and resp.time_stamp < datetime.datetime.now() - timedelta(years = 50):
+        return 0
+    elif str(resp.code) == code and (resp.time_stamp < datetime.datetime.now() - timedelta(weeks = 50)):
         return 2 #code has already been used
     else:
-        return 0
+        return 1
         
