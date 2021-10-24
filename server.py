@@ -51,6 +51,7 @@ def codeValidation():
         resp = requests.get("http://localhost:8000/users/"+id+"/code", json=content)
 
         validation = resp.json()
+<<<<<<< Updated upstream
         validation = int(validation['Validation'])
         if validation == 1:
             resp={
@@ -60,6 +61,20 @@ def codeValidation():
             resp={
                 'SUCCESS':'0'
             }
+=======
+        errorCode = validation['errorCode']
+        if errorCode >= 0:
+            if errorCode == 1:
+                resp={
+                    'errorCode':errorCode,
+                    'errorDescription':validation['errorDescription']
+
+                }
+            else:
+                resp={
+                    'errorCode':0
+                }
+>>>>>>> Stashed changes
         
         return jsonify(resp)
             
