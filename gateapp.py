@@ -20,13 +20,10 @@ else:
         'secret':str(secret)
     }
     resp = requests.get("http://localhost:8008/gates/id",json=body)
-<<<<<<< Updated upstream
+
     resp = resp.json()
     resp_code = resp['errorCode']
-=======
-    #resp = resp.json()
-    resp = resp['SUCCESS']
->>>>>>> Stashed changes
+
     success=0
     if resp_code == 0 :
         print("The secret is valid for this gate")
