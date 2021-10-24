@@ -45,7 +45,7 @@ class Gate(Base):
 class User(Base):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
-    code = Column(Integer)
+    code = Column(String)
     time_stamp = Column(DateTime)
     def __repr__(self):
         return "<User(id=%d code='%s', time_stamp='%s')>" % (
@@ -110,8 +110,14 @@ def setNewUserCode(ID, newCode, newDate ):
 
 def validateCode(ID,code):
     resp = getUserById(ID)
-    if resp.code == code and resp.time_stamp + timedelta(minutes = 2)  > datetime.datetime.now():
+    true1 = str(resp.code) == code
+    true2 = resp.time_stamp + timedelta(minutes = 2)  > datetime.datetime.now()
+    if str(resp.code) == code and resp.time_stamp + timedelta(minutes = 2)  > datetime.datetime.now():
+        resp.time_stamp =  datetime.datetime.now() - timedelta(years = 100)
+        session.commit()
         return 1
+    elif str(resp.code) == code and resp.time_stamp < datetime.datetime.now() - timedelta(years = 50):
+        return 2 #code has already been used
     else:
         return 0
         

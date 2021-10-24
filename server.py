@@ -50,14 +50,15 @@ def codeValidation():
 
         validation = resp.json()
         validation = int(validation['Validation'])
-        if validation == 1:
-            resp={
-                'SUCCESS':'1'
-            }
-        else:
-            resp={
-                'SUCCESS':'0'
-            }
+        if
+            if validation == 1:
+                resp={
+                    'errorCode':'1'
+                }
+            else:
+                resp={
+                    'SUCCESS':'0'
+                }
         
         return jsonify(resp)
             

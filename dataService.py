@@ -21,7 +21,7 @@ app = Flask(__name__)
 def getCode(id):
     if request.method == 'PUT':
         content = request.json
-        newCode = int(content['code'])
+        newCode = content['code']
         dB.setNewUserCode(id, newCode, datetime.datetime.now())
         return jsonify(1)
         # user = dB.getUserById(id)
@@ -42,9 +42,9 @@ def getCode(id):
                 'Validation':'1'
             }
             return jsonify(success)
-        else :
+        elif validation == 2:
             success={
-                'Validation':'0'
+                'Validation':'2'
             }
             return jsonify(success)
     else:
@@ -86,5 +86,5 @@ def createGate( ):
     
 if __name__ == "__main__":
     session.query(dB.User).delete()
-    dB.newUser(85229,27,datetime.datetime.now() - timedelta(hours = 1))
+    dB.newUser(85229,str(27),datetime.datetime.now() - timedelta(hours = 1))
     app.run(host = 'localhost', port = 8000, debug = True)    
