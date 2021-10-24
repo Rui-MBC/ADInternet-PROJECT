@@ -65,7 +65,7 @@ def logInGate():
         gate = dB.getGateById(gateInfo["id"])
         if gate.secret == gateInfo["secret"]:
             create_cont = {
-                'errorCode':0,
+                'errorCode':0
             }
         else:
             create_cont = {

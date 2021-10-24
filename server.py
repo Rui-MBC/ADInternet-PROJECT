@@ -40,6 +40,7 @@ def logInGate():
                 'errorCode' : 1,
                 'errorDescription' : 'No ID or secret'
             }
+            return jsonify(resp)
 
 
 
