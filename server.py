@@ -32,12 +32,14 @@ def getCode(id):
 def logInGate():
     if request.method == 'GET':
         content = request.json
-        # create_cont = {
-        #     'id':content['id'],
-        #     'secret':content["secret"]
-        # }
-        resp = requests.get("http://localhost:8000/gates/id", json=content)
-        return jsonify(resp.json())
+        if bool(content['id']) and bool(content['secret']):
+            resp = requests.get("http://localhost:8000/gates/id", json=content)
+            return jsonify(resp.json())
+        else:
+            resp = {
+                'errorCode' : 1,
+                'errorDescription' : 'No ID or secret'
+            }
 
 
 
@@ -50,15 +52,14 @@ def codeValidation():
 
         validation = resp.json()
         validation = int(validation['Validation'])
-        if
-            if validation == 1:
-                resp={
-                    'errorCode':'1'
-                }
-            else:
-                resp={
-                    'SUCCESS':'0'
-                }
+        if validation == 1:
+            resp={
+                'errorCode':'1'
+            }
+        else:
+            resp={
+                'SUCCESS':'0'
+            }
         
         return jsonify(resp)
             

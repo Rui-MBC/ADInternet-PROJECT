@@ -5,17 +5,25 @@ print("Contacting server ...")
 if len(sys.argv) < 1:
     print("Inavlid number of arguments")
 else:
-    id = sys.argv[1]
-    secret = sys.argv[2]
+    try:
+        id = sys.argv[1]
+    except:
+        print("Error getting ID !!!")
+    
+    try:
+        secret = sys.argv[2]
+    except:
+        print("Error getting secret !!!")
+
     body = {
-        'id':str(id),
+        'id':id,
         'secret':str(secret)
     }
     resp = requests.get("http://localhost:8008/gates/id",json=body)
     resp = resp.json()
-    resp = resp['SUCCESS']
+    resp_code = resp['errorCode']
     success=0
-    if int(resp) == 1 :
+    if resp_code == 0 :
         print("The secret is valid for this gate")
         while success != 1 :
             code = input("type the user code:")
@@ -36,7 +44,7 @@ else:
                 print("!!! Code Not Valid !!!")
 
     else:
-        print("The secret is not valid for this gate")
+        print(resp['errorDescription'])
         print("Exiting....")
 
 

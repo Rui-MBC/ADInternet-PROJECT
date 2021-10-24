@@ -65,11 +65,12 @@ def logInGate():
         gate = dB.getGateById(gateInfo["id"])
         if gate.secret == gateInfo["secret"]:
             create_cont = {
-                'SUCCESS':1,
+                'errorCode':0,
             }
         else:
             create_cont = {
-                'SUCCESS':0,
+                'errorCode':1,
+                'errorDescription':'The secret is not valid for this gate'
             }
         return jsonify(create_cont)
 
