@@ -9,11 +9,13 @@ else:
         id = sys.argv[1]
     except:
         print("Error getting ID !!!")
+        exit()
     
     try:
         secret = sys.argv[2]
     except:
         print("Error getting secret !!!")
+        exit()
 
     body = {
         'id':id,
