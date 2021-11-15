@@ -49,7 +49,7 @@ def logInGate():
             content = request.json
         except:
             resp = {
-                'errorCode' : 5,
+                'errorCode' : 11,
                 'errorDescription':'Server had an error with JSON input.'
             }
             return jsonify(resp)
@@ -68,7 +68,7 @@ def logInGate():
         else:
             resp = {
                 'errorCode' : 10,
-                'errorDescription' : 'No ID or secret'
+                'errorDescription' : 'No ID or secret.'
             }
             return jsonify(resp)
 
@@ -81,8 +81,24 @@ def codeValidation():
             content = request.json
         except:
             resp = {
-                'errorCode' : 5,
+                'errorCode' : 11,
                 'errorDescription' : 'Server had an error with JSON input.'
+            }
+            return jsonify(resp)
+        if not content:
+            resp = {
+                'errorCode' : 11,
+                'errorDescription':'Server had an error with JSON input.'
+            }
+            return jsonify(resp)
+        try:
+            content["id"]
+            content["code"]
+            content["gate_id"]
+        except:
+            resp = {
+                'errorCode' :11,
+                'errorDescription':'Server had an error with JSON input.'
             }
             return jsonify(resp)
         code = content['code']
@@ -90,7 +106,7 @@ def codeValidation():
         if not code or not id:
             resp = {
                 'errorCode' : 8,
-                'errorDescription' : 'Lacking arguments'
+                'errorDescription' : 'Lacking arguments.'
             }
             return jsonify(resp)
 
@@ -151,7 +167,7 @@ def createGate():
         except:
             resp = {
                 'errorCode' : 7,
-                'errorDescription' : 'Couldn´t access database'
+                'errorDescription' : 'Couldn´t access database.'
             }
             return jsonify(resp)
         return jsonify(resp.json())

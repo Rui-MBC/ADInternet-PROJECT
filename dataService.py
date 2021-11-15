@@ -28,11 +28,18 @@ def getCode(id):
                 'errorDescription':'database had an error with JSON input.'
             }
             return jsonify(resp)
+        if not content:
+            resp = {
+            'errorCode' : 5,
+            'errorDescription':'database had an error with JSON input.'
+        }
+            return jsonify(resp)
+
         newCode = content['code']
         if not newCode:
             resp = {
                 'errorCode' : 6,
-                'errorDescription':'Failed to receive code'
+                'errorDescription':'Failed to receive code.'
             }
             return jsonify(resp)
         dB.setNewUserCode(id, newCode, datetime.datetime.now())
@@ -48,6 +55,12 @@ def getCode(id):
         try:
             content = request.json
         except:
+            resp = {
+                'errorCode' : 5,
+                'errorDescription':'database had an error with JSON input.'
+            }
+            return jsonify(resp)
+        if not content:
             resp = {
                 'errorCode' : 5,
                 'errorDescription':'database had an error with JSON input.'
@@ -75,8 +88,6 @@ def getCode(id):
                 'errorDescription':'Correct Code, Please Proceed.'
             }
             return jsonify(success)
-    else:
-        return jsonify(0)
 
 
 
@@ -93,11 +104,25 @@ def logInGate():
             gateInfo = request.json 
         except:
             response = {
-                    'errorCode':3,
+                    'errorCode':5,
                     'errorDescription':'DataBase had an error with JSON input.'
                 }
             return jsonify(response)
-
+        if not gateInfo:
+            resp = {
+                'errorCode' : 5,
+                'errorDescription':'database had an error with JSON input.'
+            }
+            return jsonify(resp)
+        try:
+            gateInfo["id"]
+            gateInfo["secret"]
+        except:
+            resp = {
+                'errorCode' : 5,
+                'errorDescription':'database had an error with JSON input.'
+            }
+            return jsonify(resp)
         # if not isinstance(gateInfo["id"],int) :
         #     response = {
         #             'errorCode':4,
@@ -120,7 +145,7 @@ def logInGate():
             
         else:
             response = {
-                    'errorCode':2,
+                    'errorCode':3,
                     'errorDescription':'No gate found for this ID.'
                 }
 
@@ -133,10 +158,25 @@ def createGate( ):
             gateInfo = request.json 
         except:
             response = {
-                    'errorCode':3,
+                    'errorCode':5,
                     'errorDescription':'DataBase had an error with JSON input.'
                 }
             return jsonify(response)
+        if not gateInfo:
+            resp = {
+                'errorCode' : 5,
+                'errorDescription':'database had an error with JSON input.'
+            }
+            return jsonify(resp)
+        try:
+            gateInfo["id"]
+            gateInfo["location"]
+        except:
+            resp = {
+                'errorCode' : 5,
+                'errorDescription':'database had an error with JSON input.'
+            }
+            return jsonify(resp)
         sec = random.randint(1000,9999)  
         
         if not dB.getGateById(int(gateInfo["id"])):
